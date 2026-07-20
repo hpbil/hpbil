@@ -17,38 +17,47 @@ concurrency:
 
 jobs:
   security-scan:
-    name: 🛡️ Security Scan (Katana & Nuclei)
+    name: 🛡️ Fast Security Scan (Katana & Nuclei)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Go Environment
-        uses: actions/setup-go@v5
-        with:
-          go-version: '>=1.21'
-
-      - name: Install Katana & Nuclei
+      - name: Fast Install Katana & Nuclei (Pre-built Binaries)
         run: |
-          echo "Installing Katana and Nuclei..."
-          go install github.com/projectdiscovery/katana/cmd/katana@latest
-          go install github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest
+          echo "⚡ Fast-downloading pre-compiled binaries from ProjectDiscovery releases..."
+          mkdir -p $HOME/.local/bin
+          
+          # Download pre-built Katana binary
+          KATANA_URL=$(curl -s https://api.github.com/repos/projectdiscovery/katana/releases/latest | grep -o "https://[^\"]*katana_[^\"]*_linux_amd64.zip" | head -n 1)
+          wget -q $KATANA_URL -O katana.zip
+          unzip -q -o katana.zip -d $HOME/.local/bin/
+          rm katana.zip
+          
+          # Download pre-built Nuclei binary
+          NUCLEI_URL=$(curl -s https://api.github.com/repos/projectdiscovery/nuclei/releases/latest | grep -o "https://[^\"]*nuclei_[^\"]*_linux_amd64.zip" | head -n 1)
+          wget -q $NUCLEI_URL -O nuclei.zip
+          unzip -q -o nuclei.zip -d $HOME/.local/bin/
+          rm nuclei.zip
+          
+          chmod +x $HOME/.local/bin/katana $HOME/.local/bin/nuclei
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
 
       - name: Start Local Test Server
         run: |
           echo "Starting Python HTTP Server on port 8080..."
           python3 -m http.server 8080 &
-          sleep 3
+          sleep 2
 
       - name: Run Katana Crawler
         run: |
           echo "Running Katana crawler against localhost:8080..."
-          $(go env GOPATH)/bin/katana -u http://localhost:8080 -o katana_results.txt || true
+          katana -u http://localhost:8080 -o katana_results.txt || true
 
       - name: Run Nuclei Scanner
         run: |
           echo "Running Nuclei scanner against localhost:8080..."
-          $(go env GOPATH)/bin/nuclei -u http://localhost:8080 -o nuclei_results.txt -severity info,low,medium,high,critical || true
+          nuclei -u http://localhost:8080 -o nuclei_results.txt -severity info,low,medium,high,critical || true
 
       - name: Write Summary to GitHub Actions Log
         run: |
