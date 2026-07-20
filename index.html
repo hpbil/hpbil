@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="GitHub Pagesでホスティングされたモダンで洗練されたポートフォリオWebサイト。">
+  <title>Modern Portfolio | Hosted on GitHub Pages</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Navigation Header -->
+  <header class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="#hero" class="nav-logo">
+        <span class="logo-accent">&lt;</span>Developer<span class="logo-accent">/&gt;</span>
+      </a>
+      <nav class="nav-links" id="nav-links">
+        <a href="#about" class="nav-item">About</a>
+        <a href="#skills" class="nav-item">Skills</a>
+        <a href="#projects" class="nav-item">Projects</a>
+        <a href="#contact" class="nav-item btn-primary">Contact</a>
+      </nav>
+      <button class="mobile-toggle" id="mobile-toggle" aria-label="Toggle menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="hero-section" id="hero">
+      <div class="hero-backdrop" style="background-image: url('hero-bg.png');"></div>
+      <div class="hero-overlay"></div>
+      <div class="container hero-content">
+        <div class="badge fade-in">
+          <i class="fa-brands fa-github"></i> Hosted on GitHub Pages
+        </div>
+        <h1 class="hero-title fade-in">
+          Crafting Digital<br>
+          <span class="gradient-text">Experiences & Solutions</span>
+        </h1>
+        <p class="hero-description fade-in">
+          次世代のWebアプリケーションと美しいUI/UXをデザイン・開発するフロントエンド＆エンジニアリングポートフォリオへようこそ。
+        </p>
+        <div class="hero-actions fade-in">
+          <a href="#projects" class="btn btn-glow">プロジェクトを見る <i class="fa-solid fa-arrow-right"></i></a>
+          <a href="#contact" class="btn btn-secondary">お問い合わせ</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about-section" id="about">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">About Me</h2>
+          <p class="section-subtitle">パフォーマンスと美しさを両立するエンジニアリング</p>
+        </div>
+        <div class="about-grid">
+          <div class="about-card glass-card">
+            <div class="card-icon"><i class="fa-solid fa-code"></i></div>
+            <h3>Clean Code</h3>
+            <p>メンテナビリティが高く、拡張性のあるクリーンなコード構造を追求しています。</p>
+          </div>
+          <div class="about-card glass-card">
+            <div class="card-icon"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+            <h3>Modern UI/UX</h3>
+            <p>ユーザーが心地よいと感じるアニメーションと直感的なインターフェースを提供します。</p>
+          </div>
+          <div class="about-card glass-card">
+            <div class="card-icon"><i class="fa-solid fa-rocket"></i></div>
+            <h3>Fast Deployment</h3>
+            <p>GitHub Pages や CI/CD を活用し、迅速で安定したデプロイを実現します。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section class="skills-section" id="skills">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Tech Stack</h2>
+          <p class="section-subtitle">活用している主なテクノロジーとツール</p>
+        </div>
+        <div class="skills-flex">
+          <div class="skill-chip"><i class="fa-brands fa-html5"></i> HTML5</div>
+          <div class="skill-chip"><i class="fa-brands fa-css3-alt"></i> CSS3 / SCSS</div>
+          <div class="skill-chip"><i class="fa-brands fa-js"></i> JavaScript (ES6+)</div>
+          <div class="skill-chip"><i class="fa-brands fa-react"></i> React / Next.js</div>
+          <div class="skill-chip"><i class="fa-brands fa-git-alt"></i> Git / GitHub</div>
+          <div class="skill-chip"><i class="fa-solid fa-cloud"></i> GitHub Pages</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section class="projects-section" id="projects">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Featured Projects</h2>
+          <p class="section-subtitle">最近の成果物・ポートフォリオ</p>
+        </div>
+        <div class="projects-grid">
+          <article class="project-card glass-card">
+            <div class="project-badge">Featured</div>
+            <h3>Web Application Suite</h3>
+            <p>洗練されたデザインとスムーズな使い心地を備えた統合型Webアプリケーションプラットフォーム。</p>
+            <div class="project-tags">
+              <span>HTML5</span>
+              <span>CSS Grid</span>
+              <span>JavaScript</span>
+            </div>
+          </article>
+          <article class="project-card glass-card">
+            <div class="project-badge">Open Source</div>
+            <h3>GitHub Pages Starter Kit</h3>
+            <p>ワンクリックでGitHub Pagesに高速デプロイ可能なレスポンシブWebテンプレート。</p>
+            <div class="project-tags">
+              <span>GitHub Actions</span>
+              <span>Markdown</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact-section" id="contact">
+      <div class="container">
+        <div class="contact-box glass-card">
+          <h2>Get In Touch</h2>
+          <p>新しいプロジェクトのご相談やご質問がありましたら、お気軽にお問い合わせください。</p>
+          <form class="contact-form" id="contact-form" onsubmit="return false;">
+            <div class="form-group">
+              <input type="text" id="name" required placeholder="お名前">
+            </div>
+            <div class="form-group">
+              <input type="email" id="email" required placeholder="メールアドレス">
+            </div>
+            <div class="form-group">
+              <textarea id="message" rows="4" required placeholder="メッセージを入力してください..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-glow w-full">送信する <i class="fa-solid fa-paper-plane"></i></button>
+          </form>
+          <div id="form-feedback" class="form-feedback"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <p>&copy; 2026 Developer Portfolio. All rights reserved. Hosted on <strong>GitHub Pages</strong>.</p>
+      <div class="social-links">
+        <a href="https://github.com" target="_blank" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+        <a href="https://twitter.com" target="_blank" aria-label="Twitter"><i class="fa-brands fa-x-twitter"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
