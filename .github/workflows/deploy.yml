@@ -1,23 +1,87 @@
-name: Deploy Static Site to GitHub Pages
+name: Security Scan & Deploy to GitHub Pages
 
 on:
   push:
     branches: ["main"]
   workflow_dispatch:
 
-# Grant GITHUB_TOKEN the necessary permissions to deploy to GitHub Pages
+# Grant GITHUB_TOKEN the necessary permissions
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
 concurrency:
   group: "pages"
   cancel-in-progress: false
 
 jobs:
+  security-scan:
+    name: 🛡️ Security Scan (Katana & Nuclei)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Go Environment
+        uses: actions/setup-go@v5
+        with:
+          go-version: '>=1.21'
+
+      - name: Install Katana & Nuclei
+        run: |
+          echo "Installing Katana and Nuclei..."
+          go install github.com/projectdiscovery/katana/cmd/katana@latest
+          go install github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest
+
+      - name: Start Local Test Server
+        run: |
+          echo "Starting Python HTTP Server on port 8080..."
+          python3 -m http.server 8080 &
+          sleep 3
+
+      - name: Run Katana Crawler
+        run: |
+          echo "Running Katana crawler against localhost:8080..."
+          $(go env GOPATH)/bin/katana -u http://localhost:8080 -o katana_results.txt || true
+
+      - name: Run Nuclei Scanner
+        run: |
+          echo "Running Nuclei scanner against localhost:8080..."
+          $(go env GOPATH)/bin/nuclei -u http://localhost:8080 -o nuclei_results.txt -severity info,low,medium,high,critical || true
+
+      - name: Write Summary to GitHub Actions Log
+        run: |
+          echo "## 🔍 Security Scan Summary" >> $GITHUB_STEP_SUMMARY
+          echo "### 🕷️ Katana Crawled Endpoints" >> $GITHUB_STEP_SUMMARY
+          echo '```text' >> $GITHUB_STEP_SUMMARY
+          if [ -s katana_results.txt ]; then
+            cat katana_results.txt >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No endpoints discovered or empty result." >> $GITHUB_STEP_SUMMARY
+          fi
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          
+          echo "### 🛡️ Nuclei Scan Findings" >> $GITHUB_STEP_SUMMARY
+          echo '```text' >> $GITHUB_STEP_SUMMARY
+          if [ -s nuclei_results.txt ]; then
+            cat nuclei_results.txt >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No vulnerabilities or misconfigurations detected." >> $GITHUB_STEP_SUMMARY
+          fi
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload Scan Results as Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-scan-reports
+          path: |
+            katana_results.txt
+            nuclei_results.txt
+
   deploy:
+    name: 🚀 Deploy to GitHub Pages
+    needs: security-scan
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -29,10 +93,9 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
-      - name: Upload artifact
+      - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload entire repository root directory
           path: '.'
 
       - name: Deploy to GitHub Pages
