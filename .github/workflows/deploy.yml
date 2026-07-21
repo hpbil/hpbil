@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   security-scan:
-    name: 🛡️ Fast Security Scan (Katana & Nuclei)
+    name: 🛡️ Security Scan (Katana & Nuclei)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -43,40 +43,43 @@ jobs:
           chmod +x $HOME/.local/bin/katana $HOME/.local/bin/nuclei
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-      - name: Start Local Test Server
+      - name: Start Vulnerable Target Server
         run: |
-          echo "Starting Python HTTP Server on port 8080..."
-          python3 -m http.server 8080 &
-          sleep 2
+          echo "🚀 Starting Intentionally Vulnerable Server on port 8080..."
+          python3 vulnerable_server.py &
+          sleep 3
 
-      - name: Run Katana Crawler
+      - name: Run Katana Web Crawler
         run: |
-          echo "Running Katana crawler against localhost:8080..."
-          katana -u http://localhost:8080 -o katana_results.txt || true
+          echo "🕷️ Crawling target with Katana..."
+          katana -u http://localhost:8080 -jc -o katana_results.txt || true
 
-      - name: Run Nuclei Scanner
+      - name: Run Nuclei Vulnerability Scanner
         run: |
-          echo "Running Nuclei scanner against localhost:8080..."
+          echo "🎯 Scanning target with Nuclei..."
           nuclei -u http://localhost:8080 -o nuclei_results.txt -severity info,low,medium,high,critical || true
 
-      - name: Write Summary to GitHub Actions Log
+      - name: Write Rich Security Report to GitHub Summary
         run: |
-          echo "## 🔍 Security Scan Summary" >> $GITHUB_STEP_SUMMARY
-          echo "### 🕷️ Katana Crawled Endpoints" >> $GITHUB_STEP_SUMMARY
+          echo "# 🛡️ DevSecOps Automated Security Report" >> $GITHUB_STEP_SUMMARY
+          echo "Target Environment: **GitHub Actions Isolated Sandbox (localhost:8080)**" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          echo "## 🕷️ 1. Katana Crawled Endpoints" >> $GITHUB_STEP_SUMMARY
           echo '```text' >> $GITHUB_STEP_SUMMARY
           if [ -s katana_results.txt ]; then
             cat katana_results.txt >> $GITHUB_STEP_SUMMARY
           else
-            echo "No endpoints discovered or empty result." >> $GITHUB_STEP_SUMMARY
+            echo "No endpoints discovered." >> $GITHUB_STEP_SUMMARY
           fi
           echo '```' >> $GITHUB_STEP_SUMMARY
           
-          echo "### 🛡️ Nuclei Scan Findings" >> $GITHUB_STEP_SUMMARY
+          echo "## ⚠️ 2. Nuclei Vulnerability Scan Results" >> $GITHUB_STEP_SUMMARY
           echo '```text' >> $GITHUB_STEP_SUMMARY
           if [ -s nuclei_results.txt ]; then
             cat nuclei_results.txt >> $GITHUB_STEP_SUMMARY
           else
-            echo "No vulnerabilities or misconfigurations detected." >> $GITHUB_STEP_SUMMARY
+            echo "✅ No vulnerabilities detected!" >> $GITHUB_STEP_SUMMARY
           fi
           echo '```' >> $GITHUB_STEP_SUMMARY
 
