@@ -1,4 +1,4 @@
-from http.server import HTTPServer, BaseHTTPRequestHandler
+from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 import urllib.parse
 
 class VulnerableHandler(BaseHTTPRequestHandler):
@@ -58,6 +58,7 @@ class VulnerableHandler(BaseHTTPRequestHandler):
 
 if __name__ == '__main__':
     server_address = ('0.0.0.0', 8080)
-    httpd = HTTPServer(server_address, VulnerableHandler)
-    print("Vulnerable Server listening on port 8080...")
+    # Use ThreadingHTTPServer to handle high-concurrency requests from Nuclei scanner without timing out
+    httpd = ThreadingHTTPServer(server_address, VulnerableHandler)
+    print("Multi-threaded Vulnerable Server listening on port 8080...")
     httpd.serve_forever()
