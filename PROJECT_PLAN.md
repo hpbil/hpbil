@@ -25,6 +25,35 @@
 
 ---
 
+## 🏛️ アーキテクチャ選定理由 ＆ 役割分担 (Decision Rationale)
+
+### ❓ なぜ Cloudflare 内蔵 CI/CD ではなく GitHub Actions を採用するのか？
+
+Cloudflare Pages にも標準で自動ビルド・デプロイ機能（CI/CD）が用意されていますが、本プロジェクトではあえて **GitHub Actions を CI/CD 司令塔** として採用しています。その理由は以下の通りです：
+
+1. **高度なセキュリティツール（Katana / Nuclei / Gitleaks等）の実行環境確保**
+   - Cloudflare Pages の内蔵 CI/CD は標準的な Web ビルド（`npm run build` 等）のみに対応しています。
+   - 一方、GitHub Actions では完全な Linux 仮想環境が提供されるため、Go製の Katana / Nuclei のインストール、テスト用ローカルサーバーの起動、動的セキュリティスキャンを自由自在に組み合わせることが可能です。
+2. **「デプロイ前ブロック（Shift Left Security）」の関門（ゲートキーパー）化**
+   - Cloudflare Pages 内蔵 CI/CD では `push` されると無条件で即時デプロイされてしまいます。
+   - GitHub Actions を間に挟むことで、**「4大セキュリティスキャンを通過（合格）したコードのみを Cloudflare Pages へ安全に送出する」** という DevSecOps の厳格な品質ゲートを構築できます。
+
+---
+
+### 📊 GitHub と Cloudflare の機能別役割分担表
+
+| 担当領域 | 🐙 GitHub (開発・検証工場) | 🟠 Cloudflare (本番配信基盤) |
+| :--- | :--- | :--- |
+| **コード管理** | **100% 担当**<br>リポジトリ管理、バージョン制御 | 担当しない |
+| **セキュリティ診断** | **100% 担当**<br>Semgrep / Gitleaks / Katana & Nuclei の実行 | 担当しない |
+| **CI/CD 司令塔** | **100% 担当**<br>使い捨て環境でのテスト＆合否判定＆デプロイ指示 | 担当しない |
+| **Webサービス配信** | 担当しない | **100% 担当**<br>Cloudflare Pages で常時・スリープなし配信 |
+| **バックエンド API** | 担当しない | **100% 担当**<br>Cloudflare Workers で認証やメモ処理実行 |
+| **データベース** | 担当しない | **100% 担当**<br>Cloudflare D1 (SQLite) でデータ永続化 |
+| **ドメイン ＆ セキュリティ** | 担当しない | **100% 担当**<br>独自ドメイン設定、HTTPS暗号化、WAF/DDoS防御 |
+
+---
+
 ## 🏗️ システムアーキテクチャ & 技術スタック
 
 ```
@@ -103,4 +132,4 @@ githubpages/
    - `wrangler-action` により Cloudflare Pages へ自動デプロイされ、指定した独自ドメイン（`https://...`）でスリープなし・HTTPSで動的機能が正しく動作することを確認。
 
 ---
-*Updated on 2026-07-21 via /grill-me detail alignment for Antigravity Integration.*
+*Updated on 2026-07-21 with Architecture Decision Record & Role Responsibility Matrix.*
